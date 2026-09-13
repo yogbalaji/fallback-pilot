@@ -1,0 +1,57 @@
+# A continuity brief, generated on-device
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: -m fallback_pilot.cli brief Northwind renewal - what do I need to know before the call
+----------------------------------------------------------------------
+
+tier 3 - Degraded - no model, extractive only - retrieval: keyword only
+
+┌─ Continuity Brief - Northwind renewal - what do I need to know before the c─┐
+│ ## Situation                                                                │
+│ Attendees: Marcus Feld (CTO), Dana Kowalski (Security), Ravi Chandra [2]    │
+│ (Procurement), Priya Raman (us) [2] procurement can even open commercial    │
+│ terms. [3]                                                                  │
+│                                                                             │
+│ ## Open actions                                                             │
+│ - SOC 2 Type II evidence pack - owner Priya - NOT STARTED [4]               │
+│ - Data residency questionnaire - owner Priya - in progress [4]              │
+│ - DPA redlines with legal - open since 4 August [4]                         │
+│ - Cost-per-seat benchmark for CFO - not started [4]                         │
+│ - Action: SOC 2 Type II evidence pack | Owner: Priya Raman | Due:           │
+│ 2026-09-05 | Status: Not started | Blocking renewal: Yes [5]                │
+│ - Action: Data residency questionnaire | Owner: Priya Raman | Due:          │
+│ 2026-09-05 | Status: In progress | Blocking renewal: Yes [5]                │
+│                                                                             │
+│ ## Blockers and risks                                                       │
+│ - Can we get a revised quote before the next call? [1]                      │
+│ - Our board requires the security sign-off before [3]                       │
+│ - Outstanding items before renewal [4]                                      │
+│ - Ahmed | Due: 2026-09-12 | Status: Open since 4 Aug | Blocking renewal:    │
+│ Yes [5]                                                                     │
+│ - Action: Cost per seat benchmark for CFO | Owner: Priya Raman | Due:       │
+│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
+│ - Action: Incident reduction value analysis | Owner: Priya Raman | Due:     │
+│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
+│                                                                             │
+│ ## Recommended next step                                                    │
+│ No model was available, so this brief is extracted verbatim from your files │
+│ rather than written. Start with the first blocker above - it carries the    │
+│ nearest deadline.                                                           │
+└─────────────── tier 3 - Degraded - no model, extractive only ───────────────┘
+Sources
+  [1] email_procurement_discount.eml - email from 
+ravi.chandra@northwindtraders.com (part 4)  cited
+  [2] call_notes_2026-08-19.md - Northwind Traders - call notes 19 August 2026 
+cited
+  [3] email_customer_escalation.eml - email from 
+dana.kowalski@northwindtraders.com (part 3)  cited
+  [4] Northwind_QBR_August.pptx - Slide 3  cited
+  [5] Northwind_Renewal_Pricing.xlsx - Sheet 'Open Actions'  cited
+  [6] email_priya_handover.eml - email from priya.raman@contoso.com (part 2)  
+cited
+  [7] Northwind_Account_Plan.docx - under '4. Commercial position'  cited
+  [8] Northwind_Renewal_Pricing.xlsx - Sheet 'Renewal Summary'  cited
+
+Every claim traces to your files. 8 of 8 sources used.
+note: No language model available - every line above is quoted directly from 
+your files, not generated.
+0.0s on this device - nothing left the machine.

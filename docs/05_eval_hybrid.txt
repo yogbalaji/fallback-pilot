@@ -1,0 +1,38 @@
+# Retrieval with on-device embeddings
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: scripts/eval_retrieval.py
+----------------------------------------------------------------------
+
+40 chunks | keyword only | unavailable (ConnectionError) - keywords only
+
+  [PASS] What is blocking the renewal?
+         Northwind_Renewal_Pricing.xlsx (rank 1)
+         -> Sheet 'Open Actions': Columns: Action, Owner, Due, Status, Blocking renewal Action: SOC 2 Type II evidence pack | Owner: P...
+  [PASS] What is our walk-away price?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '4. Commercial position': Target renewal value is USD 1.31M, a 5.6% uplift reflecting seat growth. Walk-away floor agreed with...
+  [ok  ] What did Priya hand over before her leave?
+         email_priya_handover.eml (rank 2)
+         -> email from priya.raman@contoso.com: From: priya.raman@contoso.com To: account-team@contoso.com Date: Tue, 25 Aug 2026 18:42:00 +0530 Sub...
+  [PASS] When is the real deadline, not the contract date?
+         call_notes_2026-08-19.md (rank 1)
+         -> Timeline: Contract lapses 30 November. Dana's internal approval cut-off is 12 September. That is the real dead...
+  [PASS] What discount is procurement asking for?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '3. Open risks': Procurement has requested a 15% discount, citing a competing quote. Approved discount authority is 8...
+  [PASS] Is our champion at risk of leaving?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '3. Open risks': Marcus Feld indicated in July he may move to a new role in Q1. Losing the champion before signature ...
+  [PASS] What are the outstanding items before renewal?
+         Northwind_QBR_August.pptx (rank 1)
+         -> Slide 3: Outstanding items before renewal SOC 2 Type II evidence pack - owner Priya - NOT STARTED Data reside...
+  [skip] Why is the customer unhappy with us?
+         needs the embedding model - load qwen3-embedding-0.6b
+  [skip] Is anyone threatening to walk away?
+         needs the embedding model - load qwen3-embedding-0.6b
+
+  lexical   top-3 recall: 7/7
+
+  Semantic cases were skipped. To score them:
+    foundry model load qwen3-embedding-0.6b
+    python scripts/eval_retrieval.py

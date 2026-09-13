@@ -1,0 +1,238 @@
+# Fallback Pilot - evidence captured 2026-09-13 19:28
+
+
+======================================================================
+What this machine can do
+======================================================================
+# What this machine can do
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: scripts/check_device.py
+----------------------------------------------------------------------
+
+{
+  "os": "Windows 11",
+  "cpu": "Intel(R) Core(TM) Ultra 7 165H",
+  "ram_gb": 31.6,
+  "npu_present": [
+    "Intel(R) AI Boost"
+  ],
+  "npu_family": "Meteor Lake (Core Ultra Series 1)",
+  "npu_tops_approx": 11,
+  "npu_usable_by_local_runtime": true,
+  "copilot_plus_class": false,
+  "gpus": [
+    "Intel(R) Arc(TM) Graphics"
+  ],
+  "gpu_acceleration": "Intel - OpenVINO GPU execution provider",
+  "phi_silica_supported": "no (Intel GPUs not supported)",
+  "foundry_cli": "0.10.3"
+}
+
+================================================================
+VERDICT: NPU PATH - a local runtime can target this NPU.
+         Meteor Lake (Core Ultra Series 1), approx 11 TOPS.
+         Below the 40 TOPS Copilot+ bar, so Windows'
+         built-in on-device model APIs stay locked - but a portable
+         runtime still uses the NPU. Confirm it: load a model, then
+         watch Task Manager > Performance > NPU while generating.
+
+  Phi Silica on this machine: no (Intel GPUs not supported)
+  Note: Phi Silica is being replaced by Aion Instruct (Nov 2026).
+        Prefer a portable local runtime over the built-in Windows APIs.
+
+  31.6 GB RAM - comfortable. Try a 3B-4B model, not just 0.5B.
+================================================================
+
+
+======================================================================
+Which fallback tier is active
+======================================================================
+# Which fallback tier is active
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: -m fallback_pilot.cli doctor
+----------------------------------------------------------------------
+
+┌───────────────────── Fallback Pilot - device readiness ─────────────────────┐
+│   Network        up                                                         │
+│   Local model    not found                                                  │
+│   Endpoint       http://127.0.0.1:39839/v1                                  │
+│   Cloud AI       withheld                                                   │
+│   Active tier    3 - Degraded - no model, extractive only                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+  note: No local model endpoint responding - using extractive fallback.
+
+Start the runtime first:
+  foundry server start --port 39839 --idle-timeout 0
+  foundry model load phi-4-mini
+
+
+======================================================================
+Reading local Office files
+======================================================================
+# Reading local Office files
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: -m fallback_pilot.cli ingest
+----------------------------------------------------------------------
+
+Reading from: demo_data
+
+  File                              Blocks    Status  
+  call_notes_2026-08-19.md               7    ok      
+  email_customer_escalation.eml          5    ok      
+  email_priya_handover.eml               6    ok      
+  email_procurement_discount.eml         4    ok      
+  Northwind_Account_Plan.docx           15    ok      
+  Northwind_QBR_August.pptx              8    ok      
+  Northwind_Renewal_Pricing.xlsx         2    ok      
+
+40 chunks from 7 files in 0.03s
+Stored at index\chunks.jsonl - plain text, open it and look.
+Nothing left this device.
+
+
+======================================================================
+Retrieval with NO model at all
+======================================================================
+# Retrieval with NO model at all
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: scripts/eval_retrieval.py --keyword-only
+----------------------------------------------------------------------
+
+40 chunks | keyword only | no embedding model configured
+
+  [PASS] What is blocking the renewal?
+         Northwind_Renewal_Pricing.xlsx (rank 1)
+         -> Sheet 'Open Actions': Columns: Action, Owner, Due, Status, Blocking renewal Action: SOC 2 Type II evidence pack | Owner: P...
+  [PASS] What is our walk-away price?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '4. Commercial position': Target renewal value is USD 1.31M, a 5.6% uplift reflecting seat growth. Walk-away floor agreed with...
+  [ok  ] What did Priya hand over before her leave?
+         email_priya_handover.eml (rank 2)
+         -> email from priya.raman@contoso.com: From: priya.raman@contoso.com To: account-team@contoso.com Date: Tue, 25 Aug 2026 18:42:00 +0530 Sub...
+  [PASS] When is the real deadline, not the contract date?
+         call_notes_2026-08-19.md (rank 1)
+         -> Timeline: Contract lapses 30 November. Dana's internal approval cut-off is 12 September. That is the real dead...
+  [PASS] What discount is procurement asking for?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '3. Open risks': Procurement has requested a 15% discount, citing a competing quote. Approved discount authority is 8...
+  [PASS] Is our champion at risk of leaving?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '3. Open risks': Marcus Feld indicated in July he may move to a new role in Q1. Losing the champion before signature ...
+  [PASS] What are the outstanding items before renewal?
+         Northwind_QBR_August.pptx (rank 1)
+         -> Slide 3: Outstanding items before renewal SOC 2 Type II evidence pack - owner Priya - NOT STARTED Data reside...
+  [skip] Why is the customer unhappy with us?
+         needs the embedding model - load qwen3-embedding-0.6b
+  [skip] Is anyone threatening to walk away?
+         needs the embedding model - load qwen3-embedding-0.6b
+
+  lexical   top-3 recall: 7/7
+
+  Semantic cases were skipped. To score them:
+    foundry model load qwen3-embedding-0.6b
+    python scripts/eval_retrieval.py
+
+
+======================================================================
+Retrieval with on-device embeddings
+======================================================================
+# Retrieval with on-device embeddings
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: scripts/eval_retrieval.py
+----------------------------------------------------------------------
+
+40 chunks | keyword only | unavailable (ConnectionError) - keywords only
+
+  [PASS] What is blocking the renewal?
+         Northwind_Renewal_Pricing.xlsx (rank 1)
+         -> Sheet 'Open Actions': Columns: Action, Owner, Due, Status, Blocking renewal Action: SOC 2 Type II evidence pack | Owner: P...
+  [PASS] What is our walk-away price?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '4. Commercial position': Target renewal value is USD 1.31M, a 5.6% uplift reflecting seat growth. Walk-away floor agreed with...
+  [ok  ] What did Priya hand over before her leave?
+         email_priya_handover.eml (rank 2)
+         -> email from priya.raman@contoso.com: From: priya.raman@contoso.com To: account-team@contoso.com Date: Tue, 25 Aug 2026 18:42:00 +0530 Sub...
+  [PASS] When is the real deadline, not the contract date?
+         call_notes_2026-08-19.md (rank 1)
+         -> Timeline: Contract lapses 30 November. Dana's internal approval cut-off is 12 September. That is the real dead...
+  [PASS] What discount is procurement asking for?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '3. Open risks': Procurement has requested a 15% discount, citing a competing quote. Approved discount authority is 8...
+  [PASS] Is our champion at risk of leaving?
+         Northwind_Account_Plan.docx (rank 1)
+         -> under '3. Open risks': Marcus Feld indicated in July he may move to a new role in Q1. Losing the champion before signature ...
+  [PASS] What are the outstanding items before renewal?
+         Northwind_QBR_August.pptx (rank 1)
+         -> Slide 3: Outstanding items before renewal SOC 2 Type II evidence pack - owner Priya - NOT STARTED Data reside...
+  [skip] Why is the customer unhappy with us?
+         needs the embedding model - load qwen3-embedding-0.6b
+  [skip] Is anyone threatening to walk away?
+         needs the embedding model - load qwen3-embedding-0.6b
+
+  lexical   top-3 recall: 7/7
+
+  Semantic cases were skipped. To score them:
+    foundry model load qwen3-embedding-0.6b
+    python scripts/eval_retrieval.py
+
+
+======================================================================
+A continuity brief, generated on-device
+======================================================================
+# A continuity brief, generated on-device
+# Fallback Pilot - captured 2026-09-13 19:28
+# Windows 11 | command: -m fallback_pilot.cli brief Northwind renewal - what do I need to know before the call
+----------------------------------------------------------------------
+
+tier 3 - Degraded - no model, extractive only - retrieval: keyword only
+
+┌─ Continuity Brief - Northwind renewal - what do I need to know before the c─┐
+│ ## Situation                                                                │
+│ Attendees: Marcus Feld (CTO), Dana Kowalski (Security), Ravi Chandra [2]    │
+│ (Procurement), Priya Raman (us) [2] procurement can even open commercial    │
+│ terms. [3]                                                                  │
+│                                                                             │
+│ ## Open actions                                                             │
+│ - SOC 2 Type II evidence pack - owner Priya - NOT STARTED [4]               │
+│ - Data residency questionnaire - owner Priya - in progress [4]              │
+│ - DPA redlines with legal - open since 4 August [4]                         │
+│ - Cost-per-seat benchmark for CFO - not started [4]                         │
+│ - Action: SOC 2 Type II evidence pack | Owner: Priya Raman | Due:           │
+│ 2026-09-05 | Status: Not started | Blocking renewal: Yes [5]                │
+│ - Action: Data residency questionnaire | Owner: Priya Raman | Due:          │
+│ 2026-09-05 | Status: In progress | Blocking renewal: Yes [5]                │
+│                                                                             │
+│ ## Blockers and risks                                                       │
+│ - Can we get a revised quote before the next call? [1]                      │
+│ - Our board requires the security sign-off before [3]                       │
+│ - Outstanding items before renewal [4]                                      │
+│ - Ahmed | Due: 2026-09-12 | Status: Open since 4 Aug | Blocking renewal:    │
+│ Yes [5]                                                                     │
+│ - Action: Cost per seat benchmark for CFO | Owner: Priya Raman | Due:       │
+│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
+│ - Action: Incident reduction value analysis | Owner: Priya Raman | Due:     │
+│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
+│                                                                             │
+│ ## Recommended next step                                                    │
+│ No model was available, so this brief is extracted verbatim from your files │
+│ rather than written. Start with the first blocker above - it carries the    │
+│ nearest deadline.                                                           │
+└─────────────── tier 3 - Degraded - no model, extractive only ───────────────┘
+Sources
+  [1] email_procurement_discount.eml - email from 
+ravi.chandra@northwindtraders.com (part 4)  cited
+  [2] call_notes_2026-08-19.md - Northwind Traders - call notes 19 August 2026 
+cited
+  [3] email_customer_escalation.eml - email from 
+dana.kowalski@northwindtraders.com (part 3)  cited
+  [4] Northwind_QBR_August.pptx - Slide 3  cited
+  [5] Northwind_Renewal_Pricing.xlsx - Sheet 'Open Actions'  cited
+  [6] email_priya_handover.eml - email from priya.raman@contoso.com (part 2)  
+cited
+  [7] Northwind_Account_Plan.docx - under '4. Commercial position'  cited
+  [8] Northwind_Renewal_Pricing.xlsx - Sheet 'Renewal Summary'  cited
+
+Every claim traces to your files. 8 of 8 sources used.
+note: No language model available - every line above is quoted directly from 
+your files, not generated.
+0.0s on this device - nothing left the machine.
