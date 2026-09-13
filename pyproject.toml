@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fallback-pilot"
+version = "0.1.0"
+description = "On-Device Work Continuity for Office"
+requires-python = ">=3.10"
+dependencies = ["requests>=2.31", "pyyaml>=6.0", "rich>=13.7"]
+
+[project.optional-dependencies]
+pdf = ["pypdf>=4.0"]
+demo = ["python-docx", "python-pptx", "openpyxl"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+fallback-pilot = "fallback_pilot.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+fallback_pilot = ["web/*.html"]

@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Fallback Pilot: doctor",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "fallback_pilot.cli",
+      "args": ["doctor"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Fallback Pilot: ask",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "fallback_pilot.cli",
+      "args": ["ask", "What is blocking the renewal?"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fallback Pilot</title>
+<!--
+  Everything is inline on purpose. This interface has to keep working with the
+  network switched off - that is the entire point of the product - so there is
+  no CDN, no web font, and no external script anywhere in this file.
+-->
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #12141a; color: #e8eaf0;
+    font-family: "Segoe UI", system-ui, sans-serif; font-size: 15px; line-height: 1.55;
+  }
+  header {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 14px 22px; background: #1a1d26; border-bottom: 1px solid #2a2f3d;
+    position: sticky; top: 0; z-index: 10;
+  }
+  h1 { font-size: 17px; margin: 0; font-weight: 600; letter-spacing: .2px; }
+  h1 span { color: #7d8596; font-weight: 400; }
+  .tier {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 7px 15px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    border: 1px solid; transition: background .4s, border-color .4s, color .4s;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+  .t0 { color: #6ba8ff; border-color: #2d4a7a; background: #18233a; }
+  .t1 { color: #4ade80; border-color: #2f6b45; background: #16281e; }
+  .t2 { color: #38d4d4; border-color: #2a6363; background: #14272a; }
+  .t3 { color: #fbbf24; border-color: #7a5a1e; background: #2a2314; }
+  .pulse { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+  .spacer { flex: 1; }
+  .privacy { font-size: 12px; color: #5f6878; }
+  main { max-width: 1180px; margin: 0 auto; padding: 22px; }
+  .ask { display: flex; gap: 10px; margin-bottom: 20px; }
+  input[type=text] {
+    flex: 1; padding: 13px 16px; font-size: 15px; font-family: inherit;
+    background: #1a1d26; border: 1px solid #2f3646; border-radius: 9px; color: #e8eaf0;
+  }
+  input[type=text]:focus { outline: none; border-color: #4a5673; }
+  button {
+    padding: 13px 26px; font-size: 15px; font-weight: 600; font-family: inherit;
+    background: #2563eb; color: #fff; border: 0; border-radius: 9px; cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: #1d4ed8; }
+  button:disabled { background: #333a4a; color: #6b7280; cursor: default; }
+  .grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: #1a1d26; border: 1px solid #272d3a; border-radius: 11px; padding: 20px 22px; }
+  .card h2 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.1px;
+    color: #6b7386; margin: 0 0 14px; font-weight: 600;
+  }
+  #brief { white-space: pre-wrap; word-wrap: break-word; min-height: 90px; }
+  #brief h3 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .9px; color: #8b93a7;
+    margin: 20px 0 7px; font-weight: 600;
+  }
+  #brief h3:first-child { margin-top: 0; }
+  .cite {
+    display: inline-block; background: #253150; color: #93b4ff;
+    border-radius: 4px; padding: 0 6px; font-size: 12px; font-weight: 600;
+    margin-left: 3px; vertical-align: baseline;
+  }
+  .caret { display: inline-block; width: 8px; height: 16px; background: #4ade80;
+           vertical-align: text-bottom; animation: pulse 1s steps(2) infinite; }
+  ol.src { margin: 0; padding-left: 22px; font-size: 13px; color: #aeb6c6; }
+  ol.src li { margin-bottom: 9px; }
+  ol.src li.unused { color: #5a6272; }
+  .badge { font-size: 10px; text-transform: uppercase; letter-spacing: .6px;
+           padding: 1px 6px; border-radius: 3px; margin-left: 5px; }
+  .used { background: #1c3a29; color: #4ade80; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .stat { background: #151821; border: 1px solid #262c38; border-radius: 8px; padding: 11px 13px; }
+  .stat b { display: block; font-size: 19px; color: #e8eaf0; font-weight: 600; }
+  .stat span { font-size: 11px; color: #6b7386; text-transform: uppercase; letter-spacing: .6px; }
+  .verdict { margin-top: 14px; padding: 11px 14px; border-radius: 8px; font-size: 13px; }
+  .ok { background: #16281e; border: 1px solid #2f6b45; color: #86efac; }
+  .warn { background: #2a2314; border: 1px solid #7a5a1e; color: #fcd34d; }
+  .note { margin-top: 9px; font-size: 12.5px; color: #fbbf24; }
+  footer { text-align: center; color: #4b5262; font-size: 12px; padding: 26px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Fallback&nbsp;Pilot <span>&mdash; on-device work continuity</span></h1>
+  <div id="tier" class="tier t3"><i class="dot"></i><span id="tierText">checking…</span></div>
+  <div class="spacer"></div>
+  <div class="privacy" id="privacy">nothing leaves this device</div>
+</header>
+
+<main>
+  <div class="ask">
+    <input type="text" id="topic" autocomplete="off"
+           value="Northwind renewal - what do I need to know before the call">
+    <button id="go">Get me ready</button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Continuity brief</h2>
+      <div id="brief"><span style="color:#5a6272">Press “Get me ready”.</span></div>
+      <div id="verdict"></div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Sources used</h2>
+        <ol class="src" id="sources"><li class="unused">none yet</li></ol>
+      </div>
+      <div class="card" style="margin-top:20px">
+        <h2>On this device</h2>
+        <div class="stats">
+          <div class="stat"><b id="sRetrieve">—</b><span>retrieval</span></div>
+          <div class="stat"><b id="sGenerate">—</b><span>generation</span></div>
+          <div class="stat"><b id="sFiles">—</b><span>files read</span></div>
+          <div class="stat"><b id="sNet">0</b><span>bytes sent</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>Local models, local files, local index. No cloud AI in tiers 1&ndash;3.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const TIERS = {
+  0: ["t0", "Tier 0 · cloud assisted"],
+  1: ["t1", "Tier 1 · local model, cloud AI withheld"],
+  2: ["t2", "Tier 2 · offline, local model"],
+  3: ["t3", "Tier 3 · degraded, no model"]
+};
+
+let busy = false;
+
+// Poll so the badge changes the instant the network drops. This is the moment
+// the whole demo is built around, so it must be visible without a page reload.
+async function poll() {
+  if (!busy) {
+    try {
+      const r = await fetch("/api/status");
+      const s = await r.json();
+      const [cls, label] = TIERS[s.tier] || TIERS[3];
+      const el = $("tier");
+      el.className = "tier " + cls;
+      $("tierText").textContent = label;
+      $("privacy").textContent = s.network
+        ? "nothing leaves this device"
+        : "network is off — still working";
+      $("sFiles").textContent = s.files ?? "—";
+    } catch (e) { /* server stopping; ignore */ }
+  }
+  setTimeout(poll, 2000);
+}
+poll();
+
+function renderMarkdown(text) {
+  return text
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/^#{2,3}\s*(.+)$/gm, (m, t) => `<h3>${t}</h3>`)
+    .replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (m, n) => `<span class="cite">${n}</span>`);
+}
+
+async function run() {
+  if (busy) return;
+  busy = true;
+  $("go").disabled = true;
+  $("go").textContent = "Working…";
+  $("brief").innerHTML = '<span class="caret"></span>';
+  $("verdict").innerHTML = "";
+  $("sources").innerHTML = '<li class="unused">gathering…</li>';
+  $("sRetrieve").textContent = "—";
+  $("sGenerate").textContent = "—";
+
+  let buffer = "";
+  const res = await fetch("/api/brief?topic=" + encodeURIComponent($("topic").value));
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let carry = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    carry += decoder.decode(value, { stream: true });
+    const parts = carry.split("\n\n");
+    carry = parts.pop();
+
+    for (const part of parts) {
+      if (!part.startsWith("data:")) continue;
+      const msg = JSON.parse(part.slice(5));
+
+      if (msg.type === "retrieved") {
+        $("sRetrieve").textContent = msg.ms + " ms";
+        $("sources").innerHTML = msg.sources
+          .map(s => `<li class="unused">${s}</li>`).join("");
+      } else if (msg.type === "token") {
+        buffer += msg.text;
+        $("brief").innerHTML = renderMarkdown(buffer) + '<span class="caret"></span>';
+        window.scrollTo(0, document.body.scrollHeight);
+      } else if (msg.type === "done") {
+        $("brief").innerHTML = renderMarkdown(buffer);
+        $("sGenerate").textContent = msg.seconds.toFixed(1) + " s";
+        $("sources").innerHTML = msg.sources.map((s, i) =>
+          msg.cited.includes(i + 1)
+            ? `<li>${s}<span class="badge used">cited</span></li>`
+            : `<li class="unused">${s}</li>`).join("");
+        const good = msg.grounded && msg.cited.length > 0;
+        $("verdict").innerHTML =
+          `<div class="verdict ${good ? "ok" : "warn"}">` +
+          (good
+            ? `Every claim traces to your files — ${msg.cited.length} of ${msg.sources.length} sources cited.`
+            : `Check this brief before using it.`) +
+          `</div>` +
+          msg.notes.map(n => `<div class="note">${n}</div>`).join("");
+      } else if (msg.type === "error") {
+        $("brief").innerHTML = `<span style="color:#f87171">${msg.text}</span>`;
+      }
+    }
+  }
+
+  busy = false;
+  $("go").disabled = false;
+  $("go").textContent = "Get me ready";
+}
+
+$("go").onclick = run;
+$("topic").addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+</script>
+</body>
+</html>

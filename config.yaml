@@ -1,0 +1,52 @@
+# Fallback Pilot configuration
+model:
+  # Small + fast. Swap to phi-4-mini or qwen2.5-1.5b once the pipeline works.
+  # A 0.5B model confabulates on this task - it produced a fluent brief
+  # with 1 of 5 key facts and zero citations. Use 2B or larger.
+  alias: phi-4-mini
+  max_tokens: 600
+  temperature: 0.2
+
+runtime:
+  # Leave blank to auto-discover the local runtime endpoint.
+  endpoint: ""
+  # Foundry Local picks a DYNAMIC port on each start, which makes discovery
+  # unreliable. Pin it once and discovery becomes deterministic:
+  #   foundry server start --port 39839 --idle-timeout 0
+  candidate_ports: [39839, 5273, 5272, 8080, 51234]
+  timeout_seconds: 60
+
+embeddings:
+  # Optional semantic search. Keyword search always works without this.
+  # Load the model first:  foundry model load qwen3-embedding-0.6b
+  enabled: true
+  alias: qwen3-embedding-0.6b
+
+retrieval:
+  # How many chunks to feed the model when building a brief.
+  top_k: 6
+  # Cap per file, so a brief draws on the plan, the deck AND the emails
+  # instead of six fragments of the same inbox thread.
+  max_per_source: 1
+  # How many chunks a brief gathers across all its facet queries.
+  brief_chunks: 8
+
+availability:
+  # Host used only to test raw connectivity. Never sends your data.
+  # An IP, not a hostname: resolving a name with the network off blocks for
+  # seconds. Nothing is ever sent to this address - it is used only to ask
+  # the routing table whether a route exists.
+  network_probe_host: "1.1.1.1"
+  network_probe_port: 443
+  probe_timeout_seconds: 1.2
+  # Hard constraint from the Executive Challenge:
+  # the core experience must never require paid cloud AI.
+  allow_paid_cloud_ai: false
+
+context:
+  # Folders scanned when you run `fallback-pilot ingest`.
+  # Add your own folders here - they are read locally and never uploaded.
+  sources:
+    - demo_data
+  # Where the extracted text is stored. Plain JSONL so you can inspect it.
+  index_dir: index

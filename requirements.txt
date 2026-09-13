@@ -1,0 +1,16 @@
+# Core - needed to run Fallback Pilot
+requests>=2.31
+pyyaml>=6.0
+rich>=13.7
+
+# Optional: PDF support. Word, PowerPoint and Excel need nothing extra -
+# they are read with the standard library.
+pypdf>=4.0
+
+# Optional: only to regenerate demo_data with scripts/make_demo_data.py
+# python-docx
+# python-pptx
+# openpyxl
+
+# Testing
+pytest>=8.0

@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.sqlite
+*.db
+data/
+index/
+*.egg-info/
+build/
+dist/
+
+# docs/ is committed on purpose - it is the evidence
+models/
+.DS_Store
