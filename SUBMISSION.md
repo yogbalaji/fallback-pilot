@@ -6,6 +6,20 @@ reason is given - do not paste the old wording.
 
 ---
 
+## Judging-entry confirmations
+
+The form asks you to confirm seven things. Where each is satisfied:
+
+| Confirmation | Where it lives |
+|---|---|
+| Video, 2 min, demonstrates solution + customer value | `DEMO.md` - timed script |
+| Working code / functional build | The repo. 92 tests |
+| Description: implementation, MS tech, customer value | Below, and README |
+| **Agent starts without a person prompting it** | `agent/signals.py` - calendar, file and tier triggers. `docs/07_agent_cycle.txt` |
+| **Uses observed state, not a fixed sequence** | `agent/runner.py` `decide()` - reasoning recorded per action in `docs/08_agent_activity.txt` |
+| **Human oversight: what it did, approvals, override** | `agent/journal.py`, `agent/approvals.py`. `docs/09_approvals.txt`. Pause / resume / forget |
+| Responsible AI, security, privacy | `RESPONSIBLE-AI.md` |
+
 ## Form fields
 
 | Field | Entry |

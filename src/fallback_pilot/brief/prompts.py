@@ -106,6 +106,28 @@ Rules:
 - Output the email only. No notes, no explanation, nothing after the sign-off."""
 
 
+# Retry prompt for the draft, used when the first attempt comes back empty.
+# Deliberately compact: no source block, no numbered extracts, just the facts
+# the reply needs. A small model on an NPU has a limited context window, and a
+# long prompt followed by a long brief is the most likely thing to exhaust it.
+COMPACT_DRAFT = """Write a short email.
+
+To: {recipient}
+About: {topic}
+
+What is true right now:
+{situation}
+
+Format exactly:
+Subject: <one line>
+
+<body, under 100 words>
+
+State only what is written above. Name one concrete next step with a date if
+one is given. No brackets, no source numbers, no commentary. Output the email
+only."""
+
+
 DEFAULT_INTENT = (
     "replies to the customer contact who is waiting on us, acknowledges the "
     "outstanding item they raised, and commits to a specific next step"

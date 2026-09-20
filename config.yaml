@@ -31,6 +31,22 @@ retrieval:
   # How many chunks a brief gathers across all its facet queries.
   brief_chunks: 8
 
+agent:
+  # The agent starts work on its own. It watches three things:
+  #   - meetings approaching in local .ics calendar files
+  #   - files appearing or changing in context.sources
+  #   - the capability tier changing (losing the network is the urgent one)
+  enabled: true
+  # How far ahead to look for meetings.
+  lead_minutes: 120
+  # Seconds between observation cycles.
+  interval_seconds: 30
+  # Where to look for calendars. Defaults to context.sources.
+  calendar_sources:
+    - demo_data
+  # The agent NEVER sends anything. Replies are queued for approval.
+  # This is not configurable on purpose.
+
 availability:
   # Host used only to test raw connectivity. Never sends your data.
   # An IP, not a hostname: resolving a name with the network off blocks for

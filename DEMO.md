@@ -1,16 +1,20 @@
-# Demo runbook
+# Demo runbook - two minutes
 
-A three-minute recording. The whole thing turns on one moment: the network
-goes off and nothing changes.
+The form requires a video of **no more than two minutes** that demonstrates the
+working solution and explains its value to the target customer. Two minutes is
+short. This script is timed, and the cuts are deliberate.
+
+The generation itself takes 60-90 seconds, which would consume the whole video.
+**So the agent runs before you start recording** - which is the honest thing to
+show anyway, because the agent is supposed to have already done the work by the
+time you look.
 
 ---
 
-## Before you record
-
-Do all of this. Every item is something that has actually gone wrong.
+## Pre-flight
 
 ```powershell
-# 1. Runtime up on the pinned port. This does NOT survive a reboot.
+# 1. Runtime up. Does NOT survive a reboot.
 foundry server start --port 39839 --idle-timeout 0
 foundry model load phi-4-mini
 foundry model load qwen3-embedding-0.6b
@@ -18,142 +22,122 @@ foundry model load qwen3-embedding-0.6b
 # 2. Index built
 fallback-pilot ingest
 
-# 3. Tier 1 confirmed
-fallback-pilot doctor
+# 3. Put the meeting 30 minutes out so the agent has a reason to act
+python scripts/set_demo_meeting.py --minutes 30
 
-# 4. Warm the model - the FIRST generation after loading is slower.
-#    Run one throwaway brief so the recording gets a representative time.
-fallback-pilot brief "warm up" --no-draft
+# 4. Confirm tier 1
+fallback-pilot probe
+
+# 5. Let the agent do its work NOW, before recording.
+#    This is what you will be showing: work already done.
+#    IT TAKES 60-90 SECONDS. Do not press Ctrl+C - the brief is
+#    being written on the NPU and interrupting it loses the work.
+fallback-pilot watch --once
+
+# 6. Confirm there is something to approve
+fallback-pilot approvals
 ```
 
-Then:
-
-- [ ] **Close Teams, Outlook, Slack.** A notification banner mid-recording is unusable.
-- [ ] Windows notifications off (Focus assist / Do not disturb).
-- [ ] Browser at ~125% zoom. Text must be readable when the video is scaled down.
-- [ ] **Know how to turn Wi-Fi off in one click.** Practise it. Fumbling for the
-      toggle kills the pace at the most important moment.
-- [ ] **Unplug Ethernet and disconnect any VPN.** With either connected, turning
-      off Wi-Fi changes nothing and the badge will correctly stay on tier 1.
-      Confirm with `fallback-pilot probe` before you record.
-- [ ] Task Manager open on a second screen, Performance tab, NPU visible.
-- [ ] Screen recorder set to capture the browser window, not the full desktop.
+- [ ] Close Teams, Outlook, Slack. Notifications off.
+- [ ] Browser at ~125% zoom.
+- [ ] **Unplug Ethernet, disconnect VPN.** Otherwise Wi-Fi off changes nothing.
+- [ ] Practise the Wi-Fi toggle until it is one click.
+- [ ] Recorder capturing the browser window only.
 
 ---
 
 ## The script
 
-### 0:00 — the problem (20 seconds)
+### 0:00-0:20 | The problem, and who has it
 
-> "Your best player is unavailable. The expert who owns this account went on
-> medical leave three weeks before a hard deadline, the customer is escalating,
-> and you are on a train with no signal. Everything you need is already on your
-> laptop. You just cannot read it fast enough."
+Open `fallback-pilot ui` already loaded, agent panel visible.
 
-### 0:20 — what it has (25 seconds)
+> "This is for anyone who picks up work someone else owned. Your colleague is on
+> leave, the customer is escalating, and you have a call in thirty minutes.
+> Everything you need is already on your laptop - you just can't read it fast
+> enough."
 
-```powershell
-fallback-pilot ui
-```
+### 0:20-0:50 | It already did the work
 
-Point at the browser:
+Point at the **agent activity feed**.
 
-> "Seven files. An account plan, a QBR deck, a pricing sheet, three emails,
-> call notes. Normal work files, sitting in a folder."
+> "Nobody asked it to do this. It saw a meeting coming up in my calendar,
+> noticed no brief existed yet, and prepared one. Every line here records what
+> triggered it and why it decided to act."
 
-Point at the tier badge:
+Scroll the brief.
 
-> "Tier 1. There is a network, but paid cloud AI is off the table. So this runs
-> a two-gigabyte Microsoft model on the NPU of a standard corporate laptop."
+> "Situation, open actions with owners and dates, blockers, next step. Every
+> claim cites the file it came from. The walk-away price is in a spreadsheet,
+> the real deadline is in call notes, the blocker is in an email - three files,
+> one answer."
 
-### 0:45 — generate (60 seconds)
+### 0:50-1:15 | The part it will not do
 
-Click **Get me ready**.
+Point at the **approval card**.
 
-While it streams - do not stand in silence, narrate:
+> "It also drafted a reply to the customer who's been chasing us. It has not
+> sent it. It cannot send it - there's no send capability in the code. It
+> prepares; I decide."
 
-> "Retrieval took forty milliseconds. It is now writing from eight sources
-> across all seven files."
->
-> "Every claim carries a citation. That number maps to a file you can open.
-> This matters: the app checks the citations afterwards, and if the model cites
-> a source it was never given, the brief is flagged as unverified rather than
-> printed as fact."
+Click **Approve**. Show it move into the log.
 
-When it lands, read one line aloud - the strongest one:
+> "And that decision is logged too."
 
-> "'A fifteen percent discount takes the deal to 1.05 million, below the
-> walk-away floor of 1.18 million.' That number is in a spreadsheet. The
-> deadline is in call notes. The blocker is in an email. Three files, one
-> answer."
+### 1:15-1:45 | THE MOMENT
 
-### 1:45 — THE MOMENT (35 seconds)
+> "Now watch the badge."
 
-Say this first, so they know what to watch:
+**Turn Wi-Fi off.** Wait for **Tier 2**.
 
-> "Now watch the badge in the corner."
+> "No network. The agent is still running, still watching, and the brief it
+> produces is identical - because nothing here ever depended on the network."
 
-**Turn Wi-Fi off.** Wait two to three seconds for the badge to flip to
-**Tier 2 · offline**. It confirms with a real connection attempt rather than
-trusting the routing table, so it is deliberately not instant.
+Click **Check now**.
 
-> If you are plugged into Ethernet, or on a VPN, unplug it first - otherwise
-> you still have a network and the badge is right to say so. Verify before you
-> record with `fallback-pilot probe`.
+### 1:45-2:00 | Close
 
-> "Tier 2. No network at all."
-
-Click **Get me ready** again. Let it stream.
-
-> "Same brief. Same sources. Same time. Nothing degraded, because nothing was
-> ever depending on the network."
-
-### 2:20 — the floor (25 seconds)
-
-In a second terminal:
-
-```powershell
-foundry model unload phi-4-mini
-# Or, more decisively:  foundry server stop
-```
-
-Click **Get me ready** once more.
-
-> "And if the model will not load at all - low battery, NPU busy, a machine too
-> old - it drops to tier 3 and extracts the brief straight from your files.
-> Less fluent. Still cited. Still useful. That is the difference between
-> degrading and failing."
-
-### 2:45 — close (15 seconds)
-
-> "No cloud AI. No subscription. No new hardware. Fallback Pilot runs on the
-> laptop you already have - and it keeps working when your best player, your
-> network, or your cloud AI is not there."
+> "No cloud AI. No subscription. No new hardware - this is an eleven-TOPS NPU
+> in a standard work laptop, well under the Copilot+ bar. Fallback Pilot keeps
+> work moving when your best player, your network, or your cloud AI isn't
+> there."
 
 ---
 
-## If something breaks mid-recording
+## Timing discipline
 
-| Symptom | Cause | Say this and move on |
+| Segment | Budget | If you overrun |
 |---|---|---|
-| Badge stuck on tier 3 | Runtime died | "The runtime needs restarting - that is tier 3 doing its job." |
-| Brief is slow | Cold model | Keep narrating the citations. Never apologise for the wait. |
-| Badge slow to flip | Windows releasing the adapter | Wait. It is 2-second polling, not a hang. |
-| Blank brief | Index missing | Stop. `fallback-pilot ingest`. Re-record. |
+| Problem | 20s | Cut to one sentence |
+| Agent did it | 30s | Skip scrolling the brief |
+| Approval | 25s | Do not cut - this is confirmation #6 |
+| Offline | 30s | Do not cut - this is the whole thesis |
+| Close | 15s | Cut the NPU detail, keep "no subscription" |
 
-**Do not restart the recording for a small stumble.** A demo that visibly
-recovers reads as real. A demo that is too smooth reads as a video.
+**The two segments never to cut** are the approval queue and the offline
+switch. They are the two things judges are explicitly asked to verify.
+
+---
+
+## If something breaks
+
+| Symptom | Say this |
+|---|---|
+| Badge stuck tier 1 | You still have a connection - Ethernet or VPN |
+| Nothing in the feed | `fallback-pilot watch --once` beforehand |
+| No approval card | Nobody in the demo data is waiting - check `approvals` |
+| Badge slow to flip | It confirms with a real connection. 2-3 seconds. |
+
+Do not restart for a small stumble. A demo that recovers reads as real.
 
 ---
 
 ## Worth capturing separately
 
-Short clips, no narration, useful as cutaways or as evidence in the write-up:
+Not part of the two minutes - useful as evidence in the project description.
 
-1. **Task Manager NPU graph** spiking while a brief generates. This is the proof
-   that it runs on the NPU of a non-Copilot+ machine.
-2. **`python scripts/eval_retrieval.py`** with and without the embedding model -
-   shows retrieval was measured, not eyeballed.
-3. **`docs/model_comparison.md`** on screen - shows model choice was tested.
-4. **`index/chunks.jsonl` open in an editor** - answers "how do I know it is not
-   uploading my documents?" better than any claim.
+1. Task Manager **NPU graph** spiking during generation.
+2. `python scripts/eval_retrieval.py` with and without embeddings.
+3. `docs/model_comparison.md` on screen.
+4. `index/agent_activity.jsonl` open in an editor.
+5. `index/chunks.jsonl` - answers "is it uploading my documents?"

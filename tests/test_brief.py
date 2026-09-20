@@ -126,7 +126,9 @@ def test_draft_failure_does_not_lose_the_brief():
     brief = generate("renewal", _hits(k=3), DraftBreaks(GOOD), AV)
     assert brief.sections["Situation"], "the brief must survive a draft failure"
     assert brief.draft == ""
-    assert any("Draft message unavailable" in n for n in brief.notes)
+    # Both the first attempt and the compact retry are reported, by name.
+    assert any("failed" in n.lower() for n in brief.notes)
+    assert any("ConnectionError" in n for n in brief.notes)
 
 
 def test_extractive_brief_needs_no_model():

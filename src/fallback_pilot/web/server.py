@@ -22,6 +22,7 @@ from urllib.parse import parse_qs, urlparse
 
 from .. import config as cfgmod
 from ..availability import Tier, assess
+from ..agent import Agent, ApprovalQueue, Journal
 from ..brief import gather, generate, generate_extractive
 from ..ingest import load_chunks
 from ..llm import FoundryLocalBackend, discover_endpoint
@@ -50,6 +51,11 @@ class State:
         self._lock = threading.Lock()
         self._status = {"tier": 3, "label": "checking", "network": False,
                         "model": False, "files": self.files()}
+        index_root = cfg["context"].get("index_dir", "index")
+        self.journal = Journal(index_root)
+        self.approvals = ApprovalQueue(index_root)
+        self.agent = Agent(cfg)
+        self._agent_thread = None
         # Probing takes a second or so - a real TCP connection, deliberately.
         # Running it on the request thread would make the browser wait, so it
         # runs here instead and requests read the last known answer.
@@ -127,7 +133,48 @@ class Handler(BaseHTTPRequestHandler):
         if route.path == "/api/brief":
             topic = (parse_qs(route.query).get("topic") or [""])[0].strip()
             return self._brief(topic)
+        if route.path == "/api/agent":
+            return self._agent_state()
+        if route.path == "/api/agent/decide":
+            args = parse_qs(route.query)
+            return self._decide(
+                (args.get("id") or [""])[0], (args.get("action") or [""])[0]
+            )
+        if route.path == "/api/agent/pause":
+            paused = (parse_qs(route.query).get("paused") or ["true"])[0] == "true"
+            self.state.agent.pause(paused)
+            return self._send(200, json.dumps({"paused": paused}).encode(),
+                              "application/json")
+        if route.path == "/api/agent/run":
+            return self._run_agent_once()
         self._send(404, b"not found", "text/plain")
+
+    def _agent_state(self):
+        s = self.state
+        self._send(200, json.dumps({
+            "paused": s.agent.state.paused,
+            "activity": s.journal.recent(25),
+            "approvals": s.approvals.pending(),
+        }).encode(), "application/json")
+
+    def _decide(self, item_id: str, action: str):
+        if action not in ("approved", "discarded"):
+            return self._send(400, b'{"error":"bad action"}', "application/json")
+        item = self.state.approvals.decide(item_id, action)
+        self.state.journal.record(
+            "decided",
+            f"you {action} the prepared reply"
+            + (" - copy it into your mail client to send" if action == "approved" else ""),
+            trigger="user",
+            detail={"approval_id": item_id},
+        )
+        self._send(200, json.dumps({"ok": bool(item), "item": item}).encode(),
+                   "application/json")
+
+    def _run_agent_once(self):
+        """Override: make the agent look again right now."""
+        result = self.state.agent.cycle()
+        self._send(200, json.dumps(result).encode(), "application/json")
 
     def _status(self):
         self._send(200, json.dumps(self.state.status()).encode(), "application/json")

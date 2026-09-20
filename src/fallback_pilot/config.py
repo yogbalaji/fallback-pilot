@@ -17,6 +17,12 @@ _DEFAULTS: dict[str, Any] = {
     "context": {"sources": ["demo_data"], "index_dir": "index"},
     "embeddings": {"enabled": True, "alias": "qwen3-embedding-0.6b"},
     "retrieval": {"top_k": 6, "max_per_source": 1, "brief_chunks": 8},
+    "agent": {
+        "enabled": True,
+        "lead_minutes": 120,
+        "interval_seconds": 30,
+        "calendar_sources": ["demo_data"],
+    },
 }
 
 

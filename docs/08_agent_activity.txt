@@ -1,0 +1,59 @@
+# What the agent did, and why
+# Fallback Pilot - captured 2026-09-20 17:50
+# Windows 11 | command: -m fallback_pilot.cli activity
+----------------------------------------------------------------------
+
+┌────────────────────────────── Agent activity ───────────────────────────────┐
+│   When        What                           Detail                         │
+│   17:52:52    queued reply to                (tier 1)                       │
+│               dana.kowalski@northwindtra…                                   │
+│               is waiting for your                                           │
+│               approval - not sent                                           │
+│   17:52:52    generated brief on 'Weekly     (tier 1)                       │
+│               pipeline review' - 4 of 8                                     │
+│               sources cited                                                 │
+│   17:51:51    decided prepare a brief on     meeting in 115 min and no      │
+│               'Weekly pipeline review'       brief exists yet; running at   │
+│                                              tier 1  (tier 1)               │
+│   17:51:51    triggered 'Weekly pipeline     (tier 1)                       │
+│               review' starts in 115 min                                     │
+│   17:51:51    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+│   17:48:50    queued reply to                (tier 1)                       │
+│               dana.kowalski@northwindtra…                                   │
+│               is waiting for your                                           │
+│               approval - not sent                                           │
+│   17:48:50    generated brief on             (tier 1)                       │
+│               'Northwind renewal call' -                                    │
+│               4 of 8 sources cited                                          │
+│   17:47:46    decided prepare a brief on     a brief for this already       │
+│               'Northwind renewal call'       exists, but the underlying     │
+│                                              files changed - refreshing     │
+│                                              it  (tier 1)                   │
+│   17:47:46    triggered 'Northwind           (tier 1)                       │
+│               renewal call' starts in 29                                    │
+│               min                                                           │
+│   17:47:46    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+│   17:28:50    generated brief on             (tier 1)                       │
+│               'Northwind renewal call' -                                    │
+│               8 of 8 sources cited                                          │
+│   17:28:50    failed ReadTimeout - fell      (tier 1)                       │
+│               back to extraction                                            │
+│   17:27:48    decided prepare a brief on     meeting in 29 min and no       │
+│               'Northwind renewal call'       brief exists yet; running at   │
+│                                              tier 1  (tier 1)               │
+│   17:27:48    triggered 'Northwind           (tier 1)                       │
+│               renewal call' starts in 29                                    │
+│               min                                                           │
+│   17:27:48    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+│   17:19:24    decided prepare a brief on     meeting in 29 min and no       │
+│               'Northwind renewal call'       brief exists yet; running at   │
+│                                              tier 1  (tier 1)               │
+│   17:19:24    triggered 'Northwind           (tier 1)                       │
+│               renewal call' starts in 29                                    │
+│               min                                                           │
+│   17:19:24    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+└─────────────────────────────────────────────────────────────────────────────┘

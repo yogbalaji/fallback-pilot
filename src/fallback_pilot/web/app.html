@@ -83,6 +83,52 @@
   .warn { background: #2a2314; border: 1px solid #7a5a1e; color: #fcd34d; }
   .note { margin-top: 9px; font-size: 12.5px; color: #fbbf24; }
   footer { text-align: center; color: #4b5262; font-size: 12px; padding: 26px; }
+
+  .agentbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .agentbar h2 { margin: 0; flex: 1; }
+  .mini {
+    padding: 6px 13px; font-size: 12.5px; font-weight: 600; border-radius: 7px;
+    background: #252c3a; color: #c3cad8; border: 1px solid #333c4e; cursor: pointer;
+  }
+  .mini:hover { background: #2d3546; }
+  .mini.live { background: #16281e; border-color: #2f6b45; color: #86efac; }
+  .mini.paused { background: #2a2314; border-color: #7a5a1e; color: #fcd34d; }
+
+  .approval {
+    background: #221d10; border: 1px solid #7a5a1e; border-radius: 10px;
+    padding: 15px 17px; margin-bottom: 14px;
+  }
+  .approval .head { font-size: 13px; font-weight: 700; color: #fcd34d; margin-bottom: 4px; }
+  .approval .notsent {
+    display: inline-block; font-size: 10px; letter-spacing: .7px; text-transform: uppercase;
+    background: #3a2c10; color: #fbbf24; border-radius: 3px; padding: 2px 7px; margin-left: 7px;
+  }
+  .approval pre {
+    white-space: pre-wrap; word-wrap: break-word; font-family: inherit; font-size: 13.5px;
+    color: #dfe4ee; background: #191b22; border-radius: 7px; padding: 12px 14px; margin: 11px 0;
+  }
+  .approval .acts { display: flex; gap: 9px; }
+  .approve { background: #15803d; }
+  .approve:hover { background: #166534; }
+  .discard { background: #3f4653; }
+  .discard:hover { background: #4b5462; }
+  .approval button { padding: 9px 18px; font-size: 13px; border-radius: 7px; }
+
+  ul.feed { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+  ul.feed li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid #222834; }
+  ul.feed li:last-child { border-bottom: 0; }
+  ul.feed time { color: #5f6878; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  ul.feed .ev {
+    font-size: 10px; text-transform: uppercase; letter-spacing: .6px; font-weight: 700;
+    padding: 2px 7px; border-radius: 3px; flex-shrink: 0; height: fit-content;
+  }
+  .ev-triggered { background: #14272a; color: #38d4d4; }
+  .ev-decided   { background: #18233a; color: #6ba8ff; }
+  .ev-generated { background: #16281e; color: #4ade80; }
+  .ev-queued    { background: #2a2314; color: #fbbf24; }
+  .ev-skipped   { background: #20242e; color: #6b7386; }
+  .ev-failed    { background: #2b1818; color: #f87171; }
+  ul.feed .why { color: #8b93a7; font-size: 12px; display: block; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -98,6 +144,17 @@
     <input type="text" id="topic" autocomplete="off"
            value="Northwind renewal - what do I need to know before the call">
     <button id="go">Get me ready</button>
+  </div>
+
+  <div class="card" id="agentCard" style="margin-bottom:20px">
+    <div class="agentbar">
+      <h2>Agent &mdash; runs on its own</h2>
+      <button class="mini live" id="pauseBtn">Running</button>
+      <button class="mini" id="runBtn">Check now</button>
+    </div>
+    <div id="approvals"></div>
+    <ul class="feed" id="feed"><li><time>--:--</time><span style="color:#5a6272">
+      Start it with <b>fallback-pilot watch</b></span></li></ul>
   </div>
 
   <div class="grid">
@@ -158,6 +215,57 @@ async function poll() {
   setTimeout(poll, 2000);
 }
 poll();
+
+async function loadAgent() {
+  try {
+    const r = await fetch("/api/agent");
+    const a = await r.json();
+
+    const pause = $("pauseBtn");
+    pause.textContent = a.paused ? "Paused" : "Running";
+    pause.className = "mini " + (a.paused ? "paused" : "live");
+
+    $("approvals").innerHTML = a.approvals.map(item => `
+      <div class="approval">
+        <div class="head">${item.action}<span class="notsent">not sent</span></div>
+        <div style="font-size:12px;color:#a9b0c0">Subject: ${item.subject}</div>
+        <pre>${item.body.replace(/&/g,"&amp;").replace(/</g,"&lt;")}</pre>
+        <div class="acts">
+          <button class="approve" onclick="decide('${item.id}','approved')">Approve</button>
+          <button class="discard" onclick="decide('${item.id}','discarded')">Discard</button>
+        </div>
+      </div>`).join("");
+
+    if (a.activity.length) {
+      $("feed").innerHTML = a.activity.map(e => `
+        <li>
+          <time>${e.at.split("T")[1] || ""}</time>
+          <span class="ev ev-${e.event}">${e.event}</span>
+          <span>${e.summary}${e.reasoning ? `<span class="why">${e.reasoning}</span>` : ""}</span>
+        </li>`).join("");
+    }
+  } catch (e) { /* server stopping */ }
+  setTimeout(loadAgent, 3000);
+}
+loadAgent();
+
+async function decide(id, action) {
+  await fetch(`/api/agent/decide?id=${id}&action=${action}`);
+  loadAgent();
+}
+
+$("pauseBtn").onclick = async () => {
+  const paused = $("pauseBtn").textContent === "Running";
+  await fetch("/api/agent/pause?paused=" + paused);
+  loadAgent();
+};
+
+$("runBtn").onclick = async () => {
+  $("runBtn").textContent = "Checking…";
+  await fetch("/api/agent/run");
+  $("runBtn").textContent = "Check now";
+  loadAgent();
+};
 
 function renderMarkdown(text) {
   return text

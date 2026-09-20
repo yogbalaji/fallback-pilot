@@ -1,0 +1,38 @@
+# Actions prepared but NOT taken, awaiting a person
+# Fallback Pilot - captured 2026-09-20 17:50
+# Windows 11 | command: -m fallback_pilot.cli approvals
+----------------------------------------------------------------------
+
+┌───────────────────── id 58d2c12e  -  prepared 17:48:50 ─────────────────────┐
+│ Send this reply to dana.kowalski@northwindtraders.com                       │
+│                                                                             │
+│ Subject: Northwind Renewal - Security Evidence                              │
+│                                                                             │
+│ Dear Dana,                                                                  │
+│                                                                             │
+│ I understand the urgency regarding the security evidence. As per our        │
+│ discussion, we will prioritize this matter. I will personally follow up     │
+│ with Priya to ensure this is completed by 2026-09-05, as it is a critical   │
+│ blocking renewal factor.                                                    │
+│                                                                             │
+│ Best regards,                                                               │
+│ [Your Name]                                                                 │
+└──────────────────────── NOT SENT - waiting for you ─────────────────────────┘
+┌───────────────────── id 645593b9  -  prepared 17:52:52 ─────────────────────┐
+│ Send this reply to dana.kowalski@northwindtraders.com                       │
+│                                                                             │
+│ Subject: Northwind Renewal Update                                           │
+│                                                                             │
+│ Dear Dana,                                                                  │
+│                                                                             │
+│ I understand the urgency of the Northwind renewal and acknowledge the       │
+│ outstanding items you raised. We are committed to completing the SOC 2 Type │
+│ II evidence pack and data residency questionnaire by the real deadline of   │
+│ 12 September. Our team will prioritize these tasks and keep you updated on  │
+│ our progress.                                                               │
+│                                                                             │
+│ Best regards,                                                               │
+│ Priya Raman                                                                 │
+└──────────────────────── NOT SENT - waiting for you ─────────────────────────┘
+Approve with:  fallback-pilot approvals --approve <id>
+Discard with:  fallback-pilot approvals --discard <id>

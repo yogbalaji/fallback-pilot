@@ -1,0 +1,20 @@
+# The agent starting work with no human prompt
+# Fallback Pilot - captured 2026-09-20 17:50
+# Windows 11 | command: -m fallback_pilot.cli watch --once
+----------------------------------------------------------------------
+
+Fallback Pilot agent is watching.
+Triggers: meetings approaching, files changing, capability dropping.
+It will never send anything - replies queue for your approval.
+Single cycle. A brief takes 60-90s - do not interrupt it.
+
+17:51:51 trigger  'Weekly pipeline review' starts in 115 min
+17:51:51 decide   meeting in 115 min and no brief exists yet; running at tier 1
+           writing the brief on-device - this takes 60-90s. Please wait.
+           gathered 8 extracts from 7 files
+           dana.kowalski@northwindtraders.com appears to be waiting on a reply
+17:52:52 done     brief ready: 20260920-1752-Weekly pipeline review.md
+17:52:52 approval a reply to dana.kowalski@northwindtraders.com needs your 
+approval
+           saved index\briefs\20260920-1752-Weekly pipeline review.md
+           2 item(s) awaiting your approval  see: fallback-pilot approvals

@@ -1,57 +1,54 @@
 # A continuity brief, generated on-device
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: -m fallback_pilot.cli brief Northwind renewal - what do I need to know before the call
 ----------------------------------------------------------------------
 
-tier 3 - Degraded - no model, extractive only - retrieval: keyword only
+tier 1 - Local model (cloud AI withheld) - retrieval: keyword + meaning
 
-┌─ Continuity Brief - Northwind renewal - what do I need to know before the c─┐
-│ ## Situation                                                                │
-│ Attendees: Marcus Feld (CTO), Dana Kowalski (Security), Ravi Chandra [2]    │
-│ (Procurement), Priya Raman (us) [2] procurement can even open commercial    │
-│ terms. [3]                                                                  │
-│                                                                             │
-│ ## Open actions                                                             │
-│ - SOC 2 Type II evidence pack - owner Priya - NOT STARTED [4]               │
-│ - Data residency questionnaire - owner Priya - in progress [4]              │
-│ - DPA redlines with legal - open since 4 August [4]                         │
-│ - Cost-per-seat benchmark for CFO - not started [4]                         │
-│ - Action: SOC 2 Type II evidence pack | Owner: Priya Raman | Due:           │
-│ 2026-09-05 | Status: Not started | Blocking renewal: Yes [5]                │
-│ - Action: Data residency questionnaire | Owner: Priya Raman | Due:          │
-│ 2026-09-05 | Status: In progress | Blocking renewal: Yes [5]                │
-│                                                                             │
-│ ## Blockers and risks                                                       │
-│ - Can we get a revised quote before the next call? [1]                      │
-│ - Our board requires the security sign-off before [3]                       │
-│ - Outstanding items before renewal [4]                                      │
-│ - Ahmed | Due: 2026-09-12 | Status: Open since 4 Aug | Blocking renewal:    │
-│ Yes [5]                                                                     │
-│ - Action: Cost per seat benchmark for CFO | Owner: Priya Raman | Due:       │
-│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
-│ - Action: Incident reduction value analysis | Owner: Priya Raman | Due:     │
-│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
-│                                                                             │
-│ ## Recommended next step                                                    │
-│ No model was available, so this brief is extracted verbatim from your files │
-│ rather than written. Start with the first blocker above - it carries the    │
-│ nearest deadline.                                                           │
-└─────────────── tier 3 - Degraded - no model, extractive only ───────────────┘
+writing...
+
+Situation: Northwind renewal is four weeks from internal approval cut-off, and security evidence is still outstanding [2]. The renewal signature deadline is 30 November [3].
+
+Open actions:
+- SOC 2 Type II evidence pack | owner Priya Raman | due 2026-09-05 | status not started [5]
+- Data residency questionnaire | owner Priya Raman | due 2026-09-05 | status in progress [5]
+- DPA redlines with legal - open since 4 August [7]
+- Cost-per-seat benchmark for CFO - not started [7]
+
+Blockers and risks:
+- SOC 2 Type II evidence pack | owner Priya Raman | status not started [5]
+- Data residency questionnaire | owner Priya Raman | status in progress [5]
+- DPA redlines with legal - open since 4 August [7]
+- Cost-per-seat benchmark for CFO - not started [7]
+
+Recommended next step: Prioritize obtaining SOC 2 Type II evidence pack and DPA redlines with legal to unblock renewal [5], [7].
+
+## Draft message
+
+Subject: Northwind renewal - Security Evidence Update
+
+Dear Dana,
+
+Following up on your email, we understand the urgency of obtaining the SOC 2 Type II evidence pack and DPA redlines with legal. We will prioritize these items and aim to complete them by 2026-09-05. We appreciate your patience and will keep you updated on our progress.
+
+Best regards,
+[Your Name]
+tier 1 - Local model (cloud AI withheld)
+
 Sources
   [1] email_procurement_discount.eml - email from 
-ravi.chandra@northwindtraders.com (part 4)  cited
-  [2] call_notes_2026-08-19.md - Northwind Traders - call notes 19 August 2026 
+ravi.chandra@northwindtraders.com (part 4)  not cited
+  [2] email_customer_escalation.eml - email from 
+dana.kowalski@northwindtraders.com (part 4)  cited
+  [3] email_priya_handover.eml - email from priya.raman@contoso.com (part 2)  
 cited
-  [3] email_customer_escalation.eml - email from 
-dana.kowalski@northwindtraders.com (part 3)  cited
-  [4] Northwind_QBR_August.pptx - Slide 3  cited
+  [4] call_notes_2026-08-19.md - Northwind Traders - call notes 19 August 2026 
+not cited
   [5] Northwind_Renewal_Pricing.xlsx - Sheet 'Open Actions'  cited
-  [6] email_priya_handover.eml - email from priya.raman@contoso.com (part 2)  
-cited
-  [7] Northwind_Account_Plan.docx - under '4. Commercial position'  cited
-  [8] Northwind_Renewal_Pricing.xlsx - Sheet 'Renewal Summary'  cited
+  [6] Northwind_Account_Plan.docx - under '4. Commercial position'  not cited
+  [7] Northwind_QBR_August.pptx - Slide 3  cited
+  [8] email_customer_escalation.eml - email from 
+dana.kowalski@northwindtraders.com  not cited
 
-Every claim traces to your files. 8 of 8 sources used.
-note: No language model available - every line above is quoted directly from 
-your files, not generated.
-0.0s on this device - nothing left the machine.
+Every claim traces to your files. 4 of 8 sources used.
+54.7s on this device using phi-4-mini - nothing left the machine.

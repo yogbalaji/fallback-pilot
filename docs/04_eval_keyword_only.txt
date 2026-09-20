@@ -1,5 +1,5 @@
 # Retrieval with NO model at all
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: scripts/eval_retrieval.py --keyword-only
 ----------------------------------------------------------------------
 

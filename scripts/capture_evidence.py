@@ -34,6 +34,12 @@ STEPS = [
     ("06_brief.txt", "A continuity brief, generated on-device",
      [sys.executable, "-m", "fallback_pilot.cli", "brief",
       "Northwind renewal - what do I need to know before the call"]),
+    ("07_agent_cycle.txt", "The agent starting work with no human prompt",
+     [sys.executable, "-m", "fallback_pilot.cli", "watch", "--once"]),
+    ("08_agent_activity.txt", "What the agent did, and why",
+     [sys.executable, "-m", "fallback_pilot.cli", "activity"]),
+    ("09_approvals.txt", "Actions prepared but NOT taken, awaiting a person",
+     [sys.executable, "-m", "fallback_pilot.cli", "approvals"]),
 ]
 
 
@@ -95,7 +101,10 @@ def main() -> int:
         "once with on-device embeddings loaded. The difference between them is\n"
         "what the semantic layer contributes.\n\n"
         "`01_device.txt` shows the hardware this ran on. It is a standard\n"
-        "corporate laptop, not a Copilot+ PC.\n",
+        "corporate laptop, not a Copilot+ PC.\n\n"
+        "`07_agent_cycle.txt` through `09_approvals.txt` show the agent starting\n"
+        "work without being prompted, the reasoning behind each decision, and the\n"
+        "approval queue holding an action it prepared but will not take.\n",
         encoding="utf-8",
     )
 

@@ -1,5 +1,5 @@
 # Reading local Office files
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: -m fallback_pilot.cli ingest
 ----------------------------------------------------------------------
 
@@ -14,6 +14,6 @@ Reading from: demo_data
   Northwind_QBR_August.pptx              8    ok      
   Northwind_Renewal_Pricing.xlsx         2    ok      
 
-40 chunks from 7 files in 0.03s
+40 chunks from 7 files in 0.02s
 Stored at index\chunks.jsonl - plain text, open it and look.
 Nothing left this device.

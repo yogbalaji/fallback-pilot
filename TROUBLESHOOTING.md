@@ -1,3 +1,16 @@
+## `approvals` says nothing is waiting
+
+Check `fallback-pilot activity` first. If you see `triggered` and `decided` but
+no `generated`, the brief was interrupted before it finished.
+
+A brief takes **60-90 seconds** on a laptop NPU. `watch --once` narrates what it
+is doing, but there is still a long pause while the model writes. Let it finish
+- the line `done  brief ready: ...` means it completed.
+
+A draft is only queued when the local context shows someone is actually waiting
+on a reply. In the demo data that is Dana Kowalski, who has chased three times.
+At tier 3 no draft is generated at all, because there is no model to write one.
+
 ## The tier badge is stuck on tier 1
 
 Run:

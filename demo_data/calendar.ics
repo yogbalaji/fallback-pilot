@@ -1,0 +1,25 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Fallback Pilot//Demo Calendar//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:northwind-renewal-call@fallback-pilot.local
+DTSTAMP:20260920T174736
+DTSTART:20260920T181736
+DTEND:20260920T184736
+SUMMARY:Northwind renewal call
+DESCRIPTION:Renewal discussion. Priya is on leave - security evidence and
+ commercial terms both outstanding.
+ATTENDEE;CN=Dana Kowalski:mailto:dana.kowalski@northwindtraders.com
+ATTENDEE;CN=Ravi Chandra:mailto:ravi.chandra@northwindtraders.com
+ATTENDEE;CN=Marcus Feld:mailto:marcus.feld@northwindtraders.com
+END:VEVENT
+BEGIN:VEVENT
+UID:internal-pipeline-review@fallback-pilot.local
+DTSTAMP:20260920T174736
+DTSTART:20260920T194736
+DTEND:20260920T201736
+SUMMARY:Weekly pipeline review
+DESCRIPTION:Internal. Lower priority than customer calls.
+END:VEVENT
+END:VCALENDAR

@@ -1,6 +1,6 @@
 # Evidence
 
-Captured 2026-09-13 19:28 by `python scripts/capture_evidence.py`.
+Captured 2026-09-20 17:50 by `python scripts/capture_evidence.py`.
 
 - `01_device.txt` - What this machine can do
 - `02_readiness.txt` - Which fallback tier is active
@@ -8,6 +8,9 @@ Captured 2026-09-13 19:28 by `python scripts/capture_evidence.py`.
 - `04_eval_keyword_only.txt` - Retrieval with NO model at all
 - `05_eval_hybrid.txt` - Retrieval with on-device embeddings
 - `06_brief.txt` - A continuity brief, generated on-device
+- `07_agent_cycle.txt` - The agent starting work with no human prompt
+- `08_agent_activity.txt` - What the agent did, and why
+- `09_approvals.txt` - Actions prepared but NOT taken, awaiting a person
 - `ALL.txt` - everything above in one file
 
 ## What to look at
@@ -19,3 +22,7 @@ what the semantic layer contributes.
 
 `01_device.txt` shows the hardware this ran on. It is a standard
 corporate laptop, not a Copilot+ PC.
+
+`07_agent_cycle.txt` through `09_approvals.txt` show the agent starting
+work without being prompted, the reasoning behind each decision, and the
+approval queue holding an action it prepared but will not take.

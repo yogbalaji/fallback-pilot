@@ -1,17 +1,13 @@
 # Which fallback tier is active
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: -m fallback_pilot.cli doctor
 ----------------------------------------------------------------------
 
 ┌───────────────────── Fallback Pilot - device readiness ─────────────────────┐
 │   Network        up                                                         │
-│   Local model    not found                                                  │
+│   Local model    serving                                                    │
 │   Endpoint       http://127.0.0.1:39839/v1                                  │
 │   Cloud AI       withheld                                                   │
-│   Active tier    3 - Degraded - no model, extractive only                   │
+│   Active tier    1 - Local model (cloud AI withheld)                        │
 └─────────────────────────────────────────────────────────────────────────────┘
-  note: No local model endpoint responding - using extractive fallback.
-
-Start the runtime first:
-  foundry server start --port 39839 --idle-timeout 0
-  foundry model load phi-4-mini
+  note: Network is up, but paid cloud AI is withheld by policy.

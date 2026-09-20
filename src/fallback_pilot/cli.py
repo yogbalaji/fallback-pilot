@@ -20,6 +20,7 @@ from . import config as cfgmod
 from .availability import Tier, assess
 from .ingest import ingest_paths, load_chunks, save_chunks
 from .llm import ExtractiveBackend, FoundryLocalBackend, Message, discover_endpoint
+from .agent import Agent, ApprovalQueue, Journal
 from .brief import gather, generate, generate_extractive, print_brief, to_markdown
 from .retrieve import build_retriever
 
@@ -208,6 +209,118 @@ def cmd_probe(cfg: dict) -> int:
     return 0
 
 
+def cmd_watch(cfg: dict, once: bool, interval: int | None) -> int:
+    """Run the agent. It decides what to do; nobody prompts it."""
+    every = interval or cfg["agent"].get("interval_seconds", 30)
+
+    def progress(event: str, message: str) -> None:
+        """Narrate what the agent is doing as it happens.
+
+        Generation takes 60-90 seconds on a laptop NPU. Without this the
+        terminal sits silent for a minute and a half and looks hung - which is
+        exactly long enough for someone to press Ctrl+C and kill the work.
+        """
+        stamp = time.strftime("%H:%M:%S")
+        if event == "reading":
+            console.print(f"[dim]           {message}[/]")
+        elif event == "triggered":
+            console.print(f"[dim]{stamp}[/] [cyan]trigger[/]  {message}")
+        elif event == "decided":
+            console.print(f"[dim]{stamp}[/] [blue]decide[/]   {message}")
+            console.print("[dim]           writing the brief on-device - "
+                          "this takes 60-90s. Please wait.[/]")
+        elif event == "generated":
+            console.print(f"[dim]{stamp}[/] [green]done[/]     {message}")
+        elif event == "queued":
+            console.print(f"[dim]{stamp}[/] [yellow]approval[/] {message}")
+
+    agent = Agent(cfg, on_event=progress)
+
+    console.print("[bold]Fallback Pilot agent is watching.[/]")
+    console.print("[dim]Triggers: meetings approaching, files changing, capability dropping.[/]")
+    console.print("[dim]It will never send anything - replies queue for your approval.[/]")
+    if once:
+        console.print("[dim]Single cycle. A brief takes 60-90s - do not interrupt it.[/]\n")
+    else:
+        console.print(f"[dim]Checking every {every}s. Ctrl+C to stop.[/]\n")
+
+    try:
+        for result in agent.run(interval=every, once=once):
+            stamp = time.strftime("%H:%M:%S")
+            if result["acted"]:
+                if result.get("path"):
+                    console.print(f"           [dim]saved {result['path']}[/]")
+                pending = len(agent.approvals.pending())
+                if pending:
+                    console.print(f"           [yellow]{pending} item(s) awaiting your approval[/]"
+                                  "  [dim]see: fallback-pilot approvals[/]")
+            else:
+                console.print(f"[dim]{stamp} idle - {result['reason']}[/]")
+    except KeyboardInterrupt:
+        console.print("\n[dim]Agent stopped.[/]")
+    return 0
+
+
+def cmd_activity(cfg: dict, limit: int) -> int:
+    """What did the agent do while you were not looking?"""
+    root = cfg["context"].get("index_dir", "index")
+    entries = Journal(root).recent(limit)
+    if not entries:
+        console.print("[yellow]No agent activity yet.[/] Start it with: fallback-pilot watch")
+        return 1
+
+    colours = {"triggered": "cyan", "decided": "blue", "generated": "green",
+               "queued": "yellow", "skipped": "dim", "failed": "red"}
+    t = Table(box=None, padding=(0, 2))
+    t.add_column("When"); t.add_column("What"); t.add_column("Detail")
+    for e in entries:
+        when = e["at"].split("T")[-1]
+        colour = colours.get(e["event"], "white")
+        detail = e.get("reasoning") or ""
+        if e.get("tier") is not None:
+            detail = (detail + f"  [dim](tier {e['tier']})[/]").strip()
+        t.add_row(f"[dim]{when}[/]", f"[{colour}]{e['event']}[/] {e['summary']}", detail)
+    console.print(Panel(t, title="Agent activity", border_style="cyan"))
+    return 0
+
+
+def cmd_approvals(cfg: dict, approve: str | None, discard: str | None) -> int:
+    """Nothing here has happened. Everything here is waiting on you."""
+    queue = ApprovalQueue(cfg["context"].get("index_dir", "index"))
+
+    if approve or discard:
+        item_id = approve or discard
+        status = "approved" if approve else "discarded"
+        item = queue.decide(item_id, status)
+        if not item:
+            console.print(f"[red]No pending item with id {item_id}.[/]")
+            return 1
+        console.print(f"[green]Marked {item_id} as {status}.[/]")
+        if approve:
+            console.print("[dim]Fallback Pilot does not send mail. Copy the text below "
+                          "into your mail client.[/]\n")
+            console.print(Panel(f"Subject: {item['subject']}\n\n{item['body']}",
+                                border_style="green"))
+        return 0
+
+    pending = queue.pending()
+    if not pending:
+        console.print("[green]Nothing waiting for approval.[/]")
+        return 0
+
+    for item in pending:
+        console.print(Panel(
+            f"[bold]{item['action']}[/]\n\n"
+            f"Subject: {item['subject']}\n\n{item['body']}",
+            title=f"id {item['id']}  -  prepared {item['created'].split('T')[-1]}",
+            subtitle="NOT SENT - waiting for you",
+            border_style="yellow",
+        ))
+    console.print("[dim]Approve with:  fallback-pilot approvals --approve <id>[/]")
+    console.print("[dim]Discard with:  fallback-pilot approvals --discard <id>[/]")
+    return 0
+
+
 def cmd_ui(cfg: dict, port: int, no_browser: bool) -> int:
     from .web import serve
     chunks = load_chunks(cfg["context"].get("index_dir", "index"))
@@ -325,6 +438,14 @@ def main(argv: list[str] | None = None) -> int:
     br.add_argument("--model", default=None, help="override the model for this run")
     br.add_argument("--quiet", action="store_true",
                     help="wait for the finished brief instead of streaming it")
+    wa = sub.add_parser("watch", help="run the agent - it starts work on its own")
+    wa.add_argument("--once", action="store_true", help="a single cycle, then exit")
+    wa.add_argument("--interval", type=int, default=None, help="seconds between checks")
+    ac = sub.add_parser("activity", help="what the agent did, and why")
+    ac.add_argument("--limit", type=int, default=30)
+    ap_ = sub.add_parser("approvals", help="actions waiting for your decision")
+    ap_.add_argument("--approve", default=None, metavar="ID")
+    ap_.add_argument("--discard", default=None, metavar="ID")
     ui = sub.add_parser("ui", help="open the local web interface")
     ui.add_argument("--port", type=int, default=8756)
     ui.add_argument("--no-browser", action="store_true", help="do not open a browser")
@@ -344,6 +465,12 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_search(cfg, args.query, args.top, args.rebuild)
     if args.cmd == "probe":
         return cmd_probe(cfg)
+    if args.cmd == "watch":
+        return cmd_watch(cfg, args.once, args.interval)
+    if args.cmd == "activity":
+        return cmd_activity(cfg, args.limit)
+    if args.cmd == "approvals":
+        return cmd_approvals(cfg, args.approve, args.discard)
     if args.cmd == "ui":
         return cmd_ui(cfg, args.port, args.no_browser)
     if args.cmd == "brief":

@@ -9,6 +9,15 @@ Microsoft Global Hackathon 2026 — Executive Challenge: **Hack for Zero-Cost Pr
 
 ## What this is
 
+**An agent.** It is not prompted - it watches your local calendar, your work
+folders and the machine's own capability, and starts work when any of them
+change. By the time you look, the brief is usually already there.
+
+It drafts replies but never sends them: outgoing messages wait in an approval
+queue, and every autonomous action is logged with its reasoning. See
+[RESPONSIBLE-AI.md](RESPONSIBLE-AI.md).
+
+
 An information worker has to prepare for an important customer meeting. The
 expert who owns the account is unavailable, the connection is unreliable, and
 paid cloud AI is off the table. Fallback Pilot reads permitted **local** Office
@@ -136,14 +145,61 @@ src/fallback_pilot/
   brief/render.py              terminal + markdown output
   web/server.py                local interface, stdlib only
   web/app.html                 single page, everything inline
-  cli.py                       doctor / ingest / sources / search / brief / ui
+  agent/signals.py             calendar, file and capability triggers
+  agent/runner.py              observe -> decide -> act, with reasoning
+  agent/journal.py             append-only log of autonomous actions
+  agent/approvals.py           outgoing messages, waiting for a person
+  cli.py                       watch / activity / approvals / brief / ui / ...
 tests/                         run: pytest
 scripts/eval_retrieval.py      retrieval quality gate - run after any change
 scripts/capture_evidence.py    writes proof of all of the above into docs/
 scripts/compare_models.py      run one brief across several models
-DEMO.md                        runbook for the three-minute recording
+scripts/set_demo_meeting.py    place a meeting N minutes from now
+DEMO.md                        runbook for the two-minute recording
+RESPONSIBLE-AI.md              RAI, security and privacy
 SUBMISSION.md                  form fields and measured results
 ```
+
+## The agent
+
+```powershell
+python scripts/set_demo_meeting.py --minutes 30   # give it a reason to act
+fallback-pilot watch                              # it takes it from here
+```
+
+Three kinds of signal start it, with no human prompt:
+
+| Trigger | Example |
+|---|---|
+| **Calendar** | a meeting enters the lead window |
+| **Files** | a document or email appears or changes on disk |
+| **Capability** | the tier changes - losing the network is the urgent one |
+
+It then decides from observed state rather than running a fixed sequence:
+
+- a meeting 10 minutes away outranks one 3 hours away
+- a brief already written is not rewritten unless its sources changed
+- losing connectivity promotes everything, because the window is closing
+- at tier 3 it still produces a brief, extractively, and says so
+- it remembers across restarts, so it does not redo work
+
+### Oversight
+
+```powershell
+fallback-pilot activity              # what it did, and why
+fallback-pilot approvals             # what is waiting on you
+fallback-pilot approvals --approve <id>
+```
+
+**The agent cannot send anything.** It drafts; a person sends. That is not a
+setting - there is no send capability in the code. Replies wait in a queue, and
+the decision is logged alongside everything else.
+
+The activity log records the trigger, the decision, the reasoning and the tier
+for every action, in plain JSONL at `index/agent_activity.jsonl`.
+
+Pause it, resume it, or clear its memory to force work to be redone - from the
+interface or the command line. Overrides are logged too.
 
 ## The interface
 
@@ -308,6 +364,7 @@ layer buys you.
 - [x] **5** Four-tier fallback ladder, verified on real hardware
 - [x] **6** Local web interface with live tier detection
 - [x] **7** Demo runbook and evidence capture
+- [x] **8** Autonomous agent: event triggers, state-driven decisions, oversight
 
 **Deliberately not built:** live Outlook and Teams integration. Fallback Pilot
 reads files from disk, which is what makes it work offline. Pulling from a

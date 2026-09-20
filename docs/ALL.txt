@@ -1,11 +1,11 @@
-# Fallback Pilot - evidence captured 2026-09-13 19:28
+# Fallback Pilot - evidence captured 2026-09-20 17:50
 
 
 ======================================================================
 What this machine can do
 ======================================================================
 # What this machine can do
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: scripts/check_device.py
 ----------------------------------------------------------------------
 
@@ -48,29 +48,25 @@ VERDICT: NPU PATH - a local runtime can target this NPU.
 Which fallback tier is active
 ======================================================================
 # Which fallback tier is active
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: -m fallback_pilot.cli doctor
 ----------------------------------------------------------------------
 
 ┌───────────────────── Fallback Pilot - device readiness ─────────────────────┐
 │   Network        up                                                         │
-│   Local model    not found                                                  │
+│   Local model    serving                                                    │
 │   Endpoint       http://127.0.0.1:39839/v1                                  │
 │   Cloud AI       withheld                                                   │
-│   Active tier    3 - Degraded - no model, extractive only                   │
+│   Active tier    1 - Local model (cloud AI withheld)                        │
 └─────────────────────────────────────────────────────────────────────────────┘
-  note: No local model endpoint responding - using extractive fallback.
-
-Start the runtime first:
-  foundry server start --port 39839 --idle-timeout 0
-  foundry model load phi-4-mini
+  note: Network is up, but paid cloud AI is withheld by policy.
 
 
 ======================================================================
 Reading local Office files
 ======================================================================
 # Reading local Office files
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: -m fallback_pilot.cli ingest
 ----------------------------------------------------------------------
 
@@ -85,7 +81,7 @@ Reading from: demo_data
   Northwind_QBR_August.pptx              8    ok      
   Northwind_Renewal_Pricing.xlsx         2    ok      
 
-40 chunks from 7 files in 0.03s
+40 chunks from 7 files in 0.02s
 Stored at index\chunks.jsonl - plain text, open it and look.
 Nothing left this device.
 
@@ -94,7 +90,7 @@ Nothing left this device.
 Retrieval with NO model at all
 ======================================================================
 # Retrieval with NO model at all
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: scripts/eval_retrieval.py --keyword-only
 ----------------------------------------------------------------------
 
@@ -137,11 +133,11 @@ Retrieval with NO model at all
 Retrieval with on-device embeddings
 ======================================================================
 # Retrieval with on-device embeddings
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: scripts/eval_retrieval.py
 ----------------------------------------------------------------------
 
-40 chunks | keyword only | unavailable (ConnectionError) - keywords only
+40 chunks | keyword + meaning | loaded 40 cached vectors
 
   [PASS] What is blocking the renewal?
          Northwind_Renewal_Pricing.xlsx (rank 1)
@@ -149,8 +145,8 @@ Retrieval with on-device embeddings
   [PASS] What is our walk-away price?
          Northwind_Account_Plan.docx (rank 1)
          -> under '4. Commercial position': Target renewal value is USD 1.31M, a 5.6% uplift reflecting seat growth. Walk-away floor agreed with...
-  [ok  ] What did Priya hand over before her leave?
-         email_priya_handover.eml (rank 2)
+  [PASS] What did Priya hand over before her leave?
+         email_priya_handover.eml (rank 1)
          -> email from priya.raman@contoso.com: From: priya.raman@contoso.com To: account-team@contoso.com Date: Tue, 25 Aug 2026 18:42:00 +0530 Sub...
   [PASS] When is the real deadline, not the contract date?
          call_notes_2026-08-19.md (rank 1)
@@ -164,75 +160,205 @@ Retrieval with on-device embeddings
   [PASS] What are the outstanding items before renewal?
          Northwind_QBR_August.pptx (rank 1)
          -> Slide 3: Outstanding items before renewal SOC 2 Type II evidence pack - owner Priya - NOT STARTED Data reside...
-  [skip] Why is the customer unhappy with us?
-         needs the embedding model - load qwen3-embedding-0.6b
-  [skip] Is anyone threatening to walk away?
-         needs the embedding model - load qwen3-embedding-0.6b
+  [ok  ] Why is the customer unhappy with us?
+         email_customer_escalation.eml (rank 3)
+         -> email from dana.kowalski@northwindtraders.com (part 4): Email: RE: Northwind renewal - security evidence still outstanding From: dana.kowalski@northwindtrad...
+         (marker 'third time' is in another part of the same file)
+  [PASS] Is anyone threatening to walk away?
+         email_customer_escalation.eml (rank 1)
+         -> email from dana.kowalski@northwindtraders.com (part 4): Email: RE: Northwind renewal - security evidence still outstanding From: dana.kowalski@northwindtrad...
+         (marker 'evaluate alternatives' is in another part of the same file)
 
   lexical   top-3 recall: 7/7
-
-  Semantic cases were skipped. To score them:
-    foundry model load qwen3-embedding-0.6b
-    python scripts/eval_retrieval.py
+  semantic  top-3 recall: 2/2
 
 
 ======================================================================
 A continuity brief, generated on-device
 ======================================================================
 # A continuity brief, generated on-device
-# Fallback Pilot - captured 2026-09-13 19:28
+# Fallback Pilot - captured 2026-09-20 17:50
 # Windows 11 | command: -m fallback_pilot.cli brief Northwind renewal - what do I need to know before the call
 ----------------------------------------------------------------------
 
-tier 3 - Degraded - no model, extractive only - retrieval: keyword only
+tier 1 - Local model (cloud AI withheld) - retrieval: keyword + meaning
 
-┌─ Continuity Brief - Northwind renewal - what do I need to know before the c─┐
-│ ## Situation                                                                │
-│ Attendees: Marcus Feld (CTO), Dana Kowalski (Security), Ravi Chandra [2]    │
-│ (Procurement), Priya Raman (us) [2] procurement can even open commercial    │
-│ terms. [3]                                                                  │
-│                                                                             │
-│ ## Open actions                                                             │
-│ - SOC 2 Type II evidence pack - owner Priya - NOT STARTED [4]               │
-│ - Data residency questionnaire - owner Priya - in progress [4]              │
-│ - DPA redlines with legal - open since 4 August [4]                         │
-│ - Cost-per-seat benchmark for CFO - not started [4]                         │
-│ - Action: SOC 2 Type II evidence pack | Owner: Priya Raman | Due:           │
-│ 2026-09-05 | Status: Not started | Blocking renewal: Yes [5]                │
-│ - Action: Data residency questionnaire | Owner: Priya Raman | Due:          │
-│ 2026-09-05 | Status: In progress | Blocking renewal: Yes [5]                │
-│                                                                             │
-│ ## Blockers and risks                                                       │
-│ - Can we get a revised quote before the next call? [1]                      │
-│ - Our board requires the security sign-off before [3]                       │
-│ - Outstanding items before renewal [4]                                      │
-│ - Ahmed | Due: 2026-09-12 | Status: Open since 4 Aug | Blocking renewal:    │
-│ Yes [5]                                                                     │
-│ - Action: Cost per seat benchmark for CFO | Owner: Priya Raman | Due:       │
-│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
-│ - Action: Incident reduction value analysis | Owner: Priya Raman | Due:     │
-│ 2026-09-19 | Status: Not started | Blocking renewal: No [5]                 │
-│                                                                             │
-│ ## Recommended next step                                                    │
-│ No model was available, so this brief is extracted verbatim from your files │
-│ rather than written. Start with the first blocker above - it carries the    │
-│ nearest deadline.                                                           │
-└─────────────── tier 3 - Degraded - no model, extractive only ───────────────┘
+writing...
+
+Situation: Northwind renewal is four weeks from internal approval cut-off, and security evidence is still outstanding [2]. The renewal signature deadline is 30 November [3].
+
+Open actions:
+- SOC 2 Type II evidence pack | owner Priya Raman | due 2026-09-05 | status not started [5]
+- Data residency questionnaire | owner Priya Raman | due 2026-09-05 | status in progress [5]
+- DPA redlines with legal - open since 4 August [7]
+- Cost-per-seat benchmark for CFO - not started [7]
+
+Blockers and risks:
+- SOC 2 Type II evidence pack | owner Priya Raman | status not started [5]
+- Data residency questionnaire | owner Priya Raman | status in progress [5]
+- DPA redlines with legal - open since 4 August [7]
+- Cost-per-seat benchmark for CFO - not started [7]
+
+Recommended next step: Prioritize obtaining SOC 2 Type II evidence pack and DPA redlines with legal to unblock renewal [5], [7].
+
+## Draft message
+
+Subject: Northwind renewal - Security Evidence Update
+
+Dear Dana,
+
+Following up on your email, we understand the urgency of obtaining the SOC 2 Type II evidence pack and DPA redlines with legal. We will prioritize these items and aim to complete them by 2026-09-05. We appreciate your patience and will keep you updated on our progress.
+
+Best regards,
+[Your Name]
+tier 1 - Local model (cloud AI withheld)
+
 Sources
   [1] email_procurement_discount.eml - email from 
-ravi.chandra@northwindtraders.com (part 4)  cited
-  [2] call_notes_2026-08-19.md - Northwind Traders - call notes 19 August 2026 
+ravi.chandra@northwindtraders.com (part 4)  not cited
+  [2] email_customer_escalation.eml - email from 
+dana.kowalski@northwindtraders.com (part 4)  cited
+  [3] email_priya_handover.eml - email from priya.raman@contoso.com (part 2)  
 cited
-  [3] email_customer_escalation.eml - email from 
-dana.kowalski@northwindtraders.com (part 3)  cited
-  [4] Northwind_QBR_August.pptx - Slide 3  cited
+  [4] call_notes_2026-08-19.md - Northwind Traders - call notes 19 August 2026 
+not cited
   [5] Northwind_Renewal_Pricing.xlsx - Sheet 'Open Actions'  cited
-  [6] email_priya_handover.eml - email from priya.raman@contoso.com (part 2)  
-cited
-  [7] Northwind_Account_Plan.docx - under '4. Commercial position'  cited
-  [8] Northwind_Renewal_Pricing.xlsx - Sheet 'Renewal Summary'  cited
+  [6] Northwind_Account_Plan.docx - under '4. Commercial position'  not cited
+  [7] Northwind_QBR_August.pptx - Slide 3  cited
+  [8] email_customer_escalation.eml - email from 
+dana.kowalski@northwindtraders.com  not cited
 
-Every claim traces to your files. 8 of 8 sources used.
-note: No language model available - every line above is quoted directly from 
-your files, not generated.
-0.0s on this device - nothing left the machine.
+Every claim traces to your files. 4 of 8 sources used.
+54.7s on this device using phi-4-mini - nothing left the machine.
+
+
+======================================================================
+The agent starting work with no human prompt
+======================================================================
+# The agent starting work with no human prompt
+# Fallback Pilot - captured 2026-09-20 17:50
+# Windows 11 | command: -m fallback_pilot.cli watch --once
+----------------------------------------------------------------------
+
+Fallback Pilot agent is watching.
+Triggers: meetings approaching, files changing, capability dropping.
+It will never send anything - replies queue for your approval.
+Single cycle. A brief takes 60-90s - do not interrupt it.
+
+17:51:51 trigger  'Weekly pipeline review' starts in 115 min
+17:51:51 decide   meeting in 115 min and no brief exists yet; running at tier 1
+           writing the brief on-device - this takes 60-90s. Please wait.
+           gathered 8 extracts from 7 files
+           dana.kowalski@northwindtraders.com appears to be waiting on a reply
+17:52:52 done     brief ready: 20260920-1752-Weekly pipeline review.md
+17:52:52 approval a reply to dana.kowalski@northwindtraders.com needs your 
+approval
+           saved index\briefs\20260920-1752-Weekly pipeline review.md
+           2 item(s) awaiting your approval  see: fallback-pilot approvals
+
+
+======================================================================
+What the agent did, and why
+======================================================================
+# What the agent did, and why
+# Fallback Pilot - captured 2026-09-20 17:50
+# Windows 11 | command: -m fallback_pilot.cli activity
+----------------------------------------------------------------------
+
+┌────────────────────────────── Agent activity ───────────────────────────────┐
+│   When        What                           Detail                         │
+│   17:52:52    queued reply to                (tier 1)                       │
+│               dana.kowalski@northwindtra…                                   │
+│               is waiting for your                                           │
+│               approval - not sent                                           │
+│   17:52:52    generated brief on 'Weekly     (tier 1)                       │
+│               pipeline review' - 4 of 8                                     │
+│               sources cited                                                 │
+│   17:51:51    decided prepare a brief on     meeting in 115 min and no      │
+│               'Weekly pipeline review'       brief exists yet; running at   │
+│                                              tier 1  (tier 1)               │
+│   17:51:51    triggered 'Weekly pipeline     (tier 1)                       │
+│               review' starts in 115 min                                     │
+│   17:51:51    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+│   17:48:50    queued reply to                (tier 1)                       │
+│               dana.kowalski@northwindtra…                                   │
+│               is waiting for your                                           │
+│               approval - not sent                                           │
+│   17:48:50    generated brief on             (tier 1)                       │
+│               'Northwind renewal call' -                                    │
+│               4 of 8 sources cited                                          │
+│   17:47:46    decided prepare a brief on     a brief for this already       │
+│               'Northwind renewal call'       exists, but the underlying     │
+│                                              files changed - refreshing     │
+│                                              it  (tier 1)                   │
+│   17:47:46    triggered 'Northwind           (tier 1)                       │
+│               renewal call' starts in 29                                    │
+│               min                                                           │
+│   17:47:46    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+│   17:28:50    generated brief on             (tier 1)                       │
+│               'Northwind renewal call' -                                    │
+│               8 of 8 sources cited                                          │
+│   17:28:50    failed ReadTimeout - fell      (tier 1)                       │
+│               back to extraction                                            │
+│   17:27:48    decided prepare a brief on     meeting in 29 min and no       │
+│               'Northwind renewal call'       brief exists yet; running at   │
+│                                              tier 1  (tier 1)               │
+│   17:27:48    triggered 'Northwind           (tier 1)                       │
+│               renewal call' starts in 29                                    │
+│               min                                                           │
+│   17:27:48    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+│   17:19:24    decided prepare a brief on     meeting in 29 min and no       │
+│               'Northwind renewal call'       brief exists yet; running at   │
+│                                              tier 1  (tier 1)               │
+│   17:19:24    triggered 'Northwind           (tier 1)                       │
+│               renewal call' starts in 29                                    │
+│               min                                                           │
+│   17:19:24    triggered agent started        watching calendar, files and   │
+│               watching                       capability tier                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+======================================================================
+Actions prepared but NOT taken, awaiting a person
+======================================================================
+# Actions prepared but NOT taken, awaiting a person
+# Fallback Pilot - captured 2026-09-20 17:50
+# Windows 11 | command: -m fallback_pilot.cli approvals
+----------------------------------------------------------------------
+
+┌───────────────────── id 58d2c12e  -  prepared 17:48:50 ─────────────────────┐
+│ Send this reply to dana.kowalski@northwindtraders.com                       │
+│                                                                             │
+│ Subject: Northwind Renewal - Security Evidence                              │
+│                                                                             │
+│ Dear Dana,                                                                  │
+│                                                                             │
+│ I understand the urgency regarding the security evidence. As per our        │
+│ discussion, we will prioritize this matter. I will personally follow up     │
+│ with Priya to ensure this is completed by 2026-09-05, as it is a critical   │
+│ blocking renewal factor.                                                    │
+│                                                                             │
+│ Best regards,                                                               │
+│ [Your Name]                                                                 │
+└──────────────────────── NOT SENT - waiting for you ─────────────────────────┘
+┌───────────────────── id 645593b9  -  prepared 17:52:52 ─────────────────────┐
+│ Send this reply to dana.kowalski@northwindtraders.com                       │
+│                                                                             │
+│ Subject: Northwind Renewal Update                                           │
+│                                                                             │
+│ Dear Dana,                                                                  │
+│                                                                             │
+│ I understand the urgency of the Northwind renewal and acknowledge the       │
+│ outstanding items you raised. We are committed to completing the SOC 2 Type │
+│ II evidence pack and data residency questionnaire by the real deadline of   │
+│ 12 September. Our team will prioritize these tasks and keep you updated on  │
+│ our progress.                                                               │
+│                                                                             │
+│ Best regards,                                                               │
+│ Priya Raman                                                                 │
+└──────────────────────── NOT SENT - waiting for you ─────────────────────────┘
+Approve with:  fallback-pilot approvals --approve <id>
+Discard with:  fallback-pilot approvals --discard <id>

@@ -159,6 +159,7 @@ def generate(
     intent: str | None = None,
     with_draft: bool = True,
     on_token=None,
+    recipient: str = "",
 ) -> Brief:
     started = time.perf_counter()
     source_block = prompts.format_sources(hits)
@@ -219,7 +220,29 @@ def generate(
                 draft = _clean_draft(backend.complete(
                     draft_ask, max_tokens=350, temperature=temperature))
         except Exception as exc:
-            notes.append(f"Draft message unavailable ({type(exc).__name__}).")
+            notes.append(f"Draft message failed: {type(exc).__name__} - {exc}")
+
+        # A small model that has just written a long brief can return nothing
+        # at all for the second call - its context is full. Retry once with a
+        # compact prompt carrying only the facts the reply actually needs.
+        if not draft:
+            try:
+                compact = prompts.COMPACT_DRAFT.format(
+                    recipient=recipient or "the person waiting on a reply",
+                    topic=topic,
+                    situation=sections.get("Situation", "").strip() or topic,
+                )
+                draft = _clean_draft(backend.complete(
+                    [Message("system", prompts.SYSTEM), Message("user", compact)],
+                    max_tokens=300, temperature=temperature,
+                ))
+                if draft:
+                    notes.append("Draft written on a second, shorter attempt.")
+            except Exception as exc:
+                notes.append(f"Draft retry failed: {type(exc).__name__} - {exc}")
+
+        if not draft and not any("failed" in n for n in notes):
+            notes.append("Model returned an empty draft twice.")
 
     cited = _citations(body) | _citations(draft)
     valid = {n for n in cited if 1 <= n <= len(hits)}
